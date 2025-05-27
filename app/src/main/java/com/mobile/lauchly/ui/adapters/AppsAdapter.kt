@@ -1,4 +1,4 @@
-package com.mobile.lauchly
+package com.mobile.lauchly.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.mobile.lauchly.R
 import com.mobile.lauchly.data.AppInfo
 import kotlin.collections.filter
 import kotlin.collections.toList

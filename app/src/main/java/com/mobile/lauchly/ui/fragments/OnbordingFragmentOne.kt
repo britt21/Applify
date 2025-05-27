@@ -1,4 +1,4 @@
-package com.mobile.lauchly
+package com.mobile.lauchly.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mobile.lauchly.databinding.FragmentOneBinding
 
-class OnbordingFragmentOne :Fragment(){
+class OnbordingFragmentOne : Fragment(){
 
     lateinit var binding: FragmentOneBinding
     override fun onCreateView(

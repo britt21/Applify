@@ -1,4 +1,4 @@
-package com.mobile.lauchly
+package com.mobile.lauchly.ui.adapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
