@@ -9,6 +9,7 @@
         android:id="@+id/finishIcon"
         android:layout_width="120dp"
         android:layout_height="120dp"
+        app:tint="@color/black"
         android:src="@drawable/ic_check"
         app:layout_constraintBottom_toTopOf="@id/finishTitle"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,11 +43,12 @@
 
     <Button
         android:id="@+id/finishButton"
-        android:layout_width="wrap_content"
+        android:backgroundTint="@color/black"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:onClick="onOnboardingComplete"
-        android:text="Get Started"
+        android:text="Continue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
