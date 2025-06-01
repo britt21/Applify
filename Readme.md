@@ -28,8 +28,6 @@ Functions
 onCreate()
 Sets layout.
 
-Connects views.
-
 Sets up RecyclerView and search.
 
 setupRecyclerView()
