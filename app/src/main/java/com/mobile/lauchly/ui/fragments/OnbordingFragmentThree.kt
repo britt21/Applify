@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.mobile.lauchly.cache.DataManager
 import com.mobile.lauchly.databinding.FragmentThreeBinding
 
 class OnbordingFragmentThree : Fragment(){
@@ -22,6 +23,10 @@ class OnbordingFragmentThree : Fragment(){
         return binding.root
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
 

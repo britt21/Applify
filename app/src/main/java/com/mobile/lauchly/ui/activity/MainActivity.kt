@@ -7,6 +7,7 @@ import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
+import com.mobile.lauchly.cache.DataManager
 import com.mobile.lauchly.databinding.ActivityMainBinding
 import com.mobile.lauchly.ui.adapters.OnboardingPagerAdapter
 import com.mobile.lauchly.ui.fragments.OnbordingFragmentOne
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var vadapter: OnboardingPagerAdapter
 
+    lateinit var dataManager: DataManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,14 +30,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
-
-
-        val lastStep = getOnboardingStep()
-
-        println("LAST STEP:"+lastStep)
-        if (isDefaultLauncher() && lastStep == 1) {
-            binding.viewPager.currentItem = 2
-        }
+        dataManager = DataManager(this)
 
 
 
@@ -50,11 +46,13 @@ class MainActivity : AppCompatActivity() {
         binding.nextbutton.setOnClickListener {
             val current = binding.viewPager.currentItem
 
+            saveOnboardingStep(current)
+
             when (current) {
                 0 -> {
-                    saveOnboardingStep(1)
                     binding.viewPager.currentItem = 1
                 }
+
                 1 -> {
                     saveOnboardingStep(1)
                     if (!isDefaultLauncher()) {
@@ -68,6 +66,7 @@ class MainActivity : AppCompatActivity() {
                         binding.viewPager.currentItem = 2
                     }
                 }
+
                 2 -> {
                     clearOnboardingStep()
                     finish()
@@ -78,13 +77,17 @@ class MainActivity : AppCompatActivity() {
         handleSwipe()
     }
 
-    fun handleSwipe(){
+    fun handleSwipe() {
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
 
 
-                println("SWIPED==:"+position)
-                saveOnboardingStep(1)
+                println("SWIPED==:" + position)
+                println("COUNT;;SWIPED==:" + vadapter.itemCount)
+                println("CURRSTEP;;SWIPED==:" + getOnboardingStep())
+                saveOnboardingStep(position)
+
+
 
                 if (position == vadapter.itemCount - 1 || (position == vadapter.itemCount - 2) && !isDefaultLauncher()) {
                     binding.viewPager.isUserInputEnabled = false
@@ -99,18 +102,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveOnboardingStep(step: Int) {
-        val prefs = getSharedPreferences("onboarding", MODE_PRIVATE)
-        prefs.edit().putInt("step", step).apply()
+        Log.v("SAVING STEP", "SAVING STEP: $step")
+        dataManager.saveData("step", step.toString())
     }
 
     private fun getOnboardingStep(): Int {
-        val prefs = getSharedPreferences("onboarding", MODE_PRIVATE)
-        return prefs.getInt("step", 0)
+        val prefs = dataManager.readData("step", "0")
+        return prefs.toInt()
     }
 
     private fun clearOnboardingStep() {
-        val prefs = getSharedPreferences("onboarding", MODE_PRIVATE)
-        prefs.edit().remove("step").apply()
+        dataManager.saveData("step", "0")
     }
 
 
@@ -133,12 +135,17 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         val lastStep = getOnboardingStep()
-        if (lastStep == 1 && isDefaultLauncher()) {
-            binding.viewPager.currentItem = 2
-            binding.viewPager.isUserInputEnabled = false
-            binding.nextbutton.visibility = View.GONE
+
+        if (lastStep == 4) {
+
+            startHomeActivity()
+        } else {
+            Log.v("OnboardingActivity", "Last Step: $lastStep")
+            binding.viewPager.currentItem = lastStep
+//            binding.nextbutton.visibility = View.GONE
         }
     }
-
-
 }
+
+
+

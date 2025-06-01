@@ -11,6 +11,7 @@ import com.mobile.lauchly.databinding.FragmentTwoBinding
 
 class OnbordingFragmentTwo : Fragment(){
 
+
     lateinit var binding: FragmentTwoBinding
     override fun onCreateView(
         inflater: LayoutInflater,

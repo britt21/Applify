@@ -25,6 +25,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
@@ -48,4 +49,8 @@ dependencies {
     androidTestImplementation libs.androidx.espresso.core
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+
+
 }

@@ -3,19 +3,29 @@ package com.mobile.lauchly.ui.activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.SearchView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mobile.lauchly.R
+import com.mobile.lauchly.cache.DataManager
+import com.mobile.lauchly.cache.STEP
 import com.mobile.lauchly.data.AppInfo
 import com.mobile.lauchly.databinding.ActivityHomeBinding
+import com.mobile.lauchly.repository.UserRepositoryImpl
 import com.mobile.lauchly.ui.adapters.AppsAdapter
+import com.mobile.lauchly.ui.viewmodels.HomeViewModelFactory
+import com.mobile.lauchly.ui.viewmodels.HomeviewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.collections.sortBy
 import kotlin.let
@@ -24,6 +34,8 @@ import kotlin.let
 class HomeActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityHomeBinding
+    lateinit var dataManager: DataManager
+    lateinit var homeviewModel: HomeviewModel
 
     private lateinit var appsRecyclerView: RecyclerView
     private lateinit var searchView: SearchView
@@ -37,12 +49,18 @@ class HomeActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
+        val repository = UserRepositoryImpl()
+        val factory = HomeViewModelFactory(repository)
+        homeviewModel = ViewModelProvider(this, factory).get(HomeviewModel::class.java)
+
+
 
         appsRecyclerView = findViewById(R.id.appsRecyclerView)
         searchView = findViewById(R.id.searchView)
 
         setupRecyclerView()
         setupSearch()
+        dataManager = DataManager(this)
     }
 
 
@@ -59,34 +77,19 @@ class HomeActivity : AppCompatActivity() {
 
     private fun loadApps() {
         allApps.clear()
-        lifecycleScope.launch(Dispatchers.IO) {
-            val intent = Intent(Intent.ACTION_MAIN, null).apply {
-                addCategory(Intent.CATEGORY_LAUNCHER)
-            }
+        binding.probar.visibility = View.VISIBLE
 
-            val activities = packageManager.queryIntentActivities(intent, PackageManager.GET_META_DATA)
-            val tempList = mutableListOf<AppInfo>()
+        homeviewModel.allApps.observe(this) { apps ->
+            allApps.clear()
+            allApps.addAll(apps)
+            appsAdapter.updateApps(allApps)
+            binding.probar.visibility = View.GONE
 
-            for (resolveInfo in activities) {
-                val appInfo = AppInfo(
-                    label = resolveInfo.loadLabel(packageManager).toString(),
-                    packageName = resolveInfo.activityInfo.packageName,
-                    icon = resolveInfo.loadIcon(packageManager)
-                )
-                if (true) {
-                    tempList.add(appInfo)
-                }
-            }
-
-            tempList.sortBy { it.label }
-
-            runOnUiThread {
-                allApps.clear()
-                allApps.addAll(tempList)
-                appsAdapter.updateApps(allApps)
-                binding.probar.visibility = View.GONE
-            }
+            homeviewModel.allApps.removeObservers(this)
         }
+
+        homeviewModel.loadApps(this)
+
     }
 
 
@@ -111,5 +114,13 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
        loadApps()
+        dataManager.saveData(STEP, "4")
+
+        Log.d("HomeActivity", "CALSTEP: onResume: ${dataManager.readData(STEP,"")}")
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
     }
 }
